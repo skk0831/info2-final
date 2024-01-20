@@ -4,7 +4,6 @@ import random
 
 Items = []
 window = 0
-index = 0
 file_path = 'test.csv'
 column_index = 0
 x = ''
@@ -14,6 +13,15 @@ class Position:
     def __init__(self,x,y):
         self.x = x
         self.y = y
+    def get_genre(self):
+        if (40 <= self.x < 400 ) and (35 <= self.y < 65):
+            return 0
+        elif (40 <= self.x < 400 ) and (65 <= self.y < 95):
+            return 1
+        elif (40 <= self.x < 400 ) and (95 <= self.y < 125):
+            return 2
+        elif (40 <= self.x < 400 ) and (125 <= self.y < 155):
+            return 3
 
 class BDFRenderer:
     BORDER_DIRECTIONS = [
@@ -94,9 +102,6 @@ class BDFRenderer:
 def get_random_index(num):
     return random.randint(0, num)
 
-def get_color(num):
-    return random.randint(0, num)
-
 def get_items_from_column(file_path, column_index):
     items = set()
 
@@ -129,46 +134,37 @@ def update():
     global Items, window, genre_key, x, y
 
     if pyxel.btnr(pyxel.MOUSE_BUTTON_LEFT):
-        if (40 <= pyxel.mouse_x < 400 ) and (35 <= pyxel.mouse_y < 65):
-            genre_i = 0
-        elif (40 <= pyxel.mouse_x < 400 ) and (65 <= pyxel.mouse_y < 95):
-            genre_i = 1
-        elif (40 <= pyxel.mouse_x < 400 ) and (95 <= pyxel.mouse_y < 125):
-            genre_i = 2
-        elif (40 <= pyxel.mouse_x < 400 ) and (125 <= pyxel.mouse_y < 155):
-            genre_i = 3
+        pos=Position(pyxel.mouse_x,pyxel.mouse_y)
+        genre_i = pos.get_genre()
+        print(genre_i)
         genre_key = Items[genre_i]
         window = 1
-
     if window == 0:
         Items = get_items_from_column(file_path, column_index)
-        index = get_random_index(len(Items))
 
     elif window == 1:
         Items = find_values_by_key(file_path, genre_key)
-        index = get_random_index(len(Items))
-  
-    if pyxel.btnp(pyxel.KEY_SHIFT):
-        window = 0
+        if pyxel.btnp(pyxel.KEY_SHIFT):
+            window = 0
+
+
 
 def draw():
-    global x, y
+    global x, y, index
     pyxel.cls(7)
-    clor=1
-    pyxel.rect(0,0,400,200,clor)
     pyxel.text(10, 10, "window: " + str(window), 0)
     pyxel.text(10, 30, str(x) + ',' + str(y), 0)
 
     if window == 0:
-        clor = 1
-        pyxel.rect(0, 0, 400, 200, clor)
+        index = get_random_index(4)
+        print(index)
+        pyxel.rect(0, 0, 400, 200, 2)
         for i, j in enumerate(Items):
-            pyxel.text(50, i * 30 + 50, str(j), 8)
+            umplus12.draw_text(50, i * 30 + 50, str(j), 8)
     else:
-        clor = 3
-        pyxel.rect(0, 0, 400, 200, clor)
+        pyxel.rect(0, 0, 400, 200, 3)
         umplus10.draw_text(20, 50, str(Items[index][0]), 8)
         if pyxel.btn(pyxel.KEY_SPACE):
-            pyxel.text(20, 70, str(Items[index][1]), 8)
-    
+            pyxel.text(20, 90, str(Items[index][1]), 8)
+
 pyxel.run(update, draw)
